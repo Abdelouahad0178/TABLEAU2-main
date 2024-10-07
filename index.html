@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application de Dessin</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <section class="tools-board">
+            <!-- Outils de dessin -->
+            <div class="row">
+                <label class="title">Formes</label>
+                <ul class="options">
+                    <li class="option tool" id="rectangle">
+                        <img src="https://maria1.netlify.app/icons/rectangle.svg" alt="Rectangle" style="width: 20px;">
+                        <span>Rectangle</span>
+                    </li>
+                    <li class="option tool" id="circle">
+                        <img src="https://maria1.netlify.app/icons/circle.svg" alt="Cercle" style="width: 20px;">
+                        <span>Cercle</span>
+                    </li>
+                    <li class="option tool" id="triangle">
+                        <img src="https://maria1.netlify.app/icons/triangle.svg" alt="Triangle" style="width: 20px;">
+                        <span>Triangle</span>
+                    </li>
+                    <li class="option">
+                        <input type="checkbox" id="fill-color">
+                        <label for="fill-color">Remplir la couleur</label>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Outils supplémentaires -->
+            <div class="row">
+                <label class="title">Options</label>
+                <ul class="options">
+                    <li class="option active tool" id="brush">
+                        <img src="https://maria1.netlify.app/icons/brush.svg" alt="Pinceau">
+                        <span>Pinceau</span>
+                    </li>
+                    <li class="option tool" id="eraser">
+                        <img src="https://maria1.netlify.app/icons/eraser.svg" alt="Gomme">
+                        <span>Gomme</span>
+                    </li>
+                    <li class="option">
+                        <input type="range" id="size-slider" min="1" max="30" value="5">
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Choix des couleurs -->
+            <div class="row colors">
+                <label class="title">Couleurs</label>
+                <ul class="options">
+                    <li class="option" style="background-color: #ffffff;"></li>
+                    <li class="option selected" style="background-color: #000000;"></li>
+                    <li class="option" style="background-color: #E02020;"></li>
+                    <li class="option" style="background-color: #6DD400;"></li>
+                    <li class="option">
+                        <input type="color" id="color-picker" value="#4A98F7">
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Formulaire pour ajouter du texte -->
+            <div class="row text-properties">
+                <label class="title">Propriétés du texte</label>
+                <input type="text" id="text-input" placeholder="Entrez votre texte">
+                <label for="font-size">Taille de la police :</label>
+                <input type="number" id="font-size" value="20" min="10" max="100">
+                <label for="font-family">Police :</label>
+                <select id="font-family">
+                    <option value="Arial">Arial</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                </select>
+                <label for="font-weight">Épaisseur :</label>
+                <select id="font-weight">
+                    <option value="normal">Normal</option>
+                    <option value="bold">Gras</option>
+                </select>
+                <label for="text-color">Couleur du texte :</label>
+                <input type="color" id="text-color" value="#000000">
+                <label for="underline">Soulignement :</label>
+                <input type="checkbox" id="underline">
+                <label for="border">Bordure du texte :</label>
+                <input type="checkbox" id="border">
+            </div>
+            <button id="add-text">Ajouter du texte</button>
+
+            <!-- Importer une image -->
+            <div class="row">
+                <label class="title">Importer une image</label>
+                <input type="file" id="upload-image" accept="image/*">
+            </div>
+
+            <!-- Boutons de contrôle -->
+            <div class="row buttons">
+                <button class="clear-canvas">Effacer le Canevas</button>
+                <button class="save-img">Enregistrer sous forme d'image</button>
+            </div>
+
+            <!-- Bouton pour afficher la calculatrice -->
+            <div class="row">
+                <button id="calc-btn">Calculatrice</button>
+            </div>
+        </section>
+
+        <section class="drawing-board">
+            <canvas></canvas>
+        </section>
+
+        <!-- Calculatrice -->
+        <section class="calculator" style="display:none;">
+            <input type="text" id="calc-display" disabled>
+            <div class="calc-buttons">
+                <button class="calc-btn" data-value="1">1</button>
+                <button class="calc-btn" data-value="2">2</button>
+                <button class="calc-btn" data-value="3">3</button>
+                <button class="calc-btn" data-value="+">+</button>
+                <button class="calc-btn" data-value="4">4</button>
+                <button class="calc-btn" data-value="5">5</button>
+                <button class="calc-btn" data-value="6">6</button>
+                <button class="calc-btn" data-value="-">-</button>
+                <button class="calc-btn" data-value="7">7</button>
+                <button class="calc-btn" data-value="8">8</button>
+                <button class="calc-btn" data-value="9">9</button>
+                <button class="calc-btn" data-value="*">*</button>
+                <button class="calc-btn" data-value="C">C</button>
+                <button class="calc-btn" data-value="0">0</button>
+                <button class="calc-btn" data-value="=">=</button>
+                <button class="calc-btn" data-value="/">/</button>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
