@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application de Dessin</title>
     <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <script defer src="script.js"></script> <!-- Script JS unique -->
 </head>
 <body>
     <div class="container">
@@ -26,11 +27,13 @@
                         <img src="https://maria1.netlify.app/icons/triangle.svg" alt="Triangle" style="width: 20px;">
                         <span>Triangle</span>
                     </li>
-                    <li class="option">
-                        <input type="checkbox" id="fill-color">
-                        <label for="fill-color">Remplir la couleur</label>
-                    </li>
                 </ul>
+            </div>
+
+            <!-- Case à cocher pour remplir la couleur -->
+            <div class="row">
+                <label class="title">Remplir la couleur</label>
+                <input type="checkbox" id="fill-color"> <!-- Ajout de la case à cocher -->
             </div>
 
             <!-- Outils supplémentaires -->
@@ -65,36 +68,16 @@
                 </ul>
             </div>
 
-            <!-- Formulaire pour ajouter du texte -->
-            <div class="row text-properties">
-                <label class="title">Propriétés du texte</label>
-                <input type="text" id="text-input" placeholder="Entrez votre texte">
-                <label for="font-size">Taille de la police :</label>
-                <input type="number" id="font-size" value="20" min="10" max="100">
-                <label for="font-family">Police :</label>
-                <select id="font-family">
-                    <option value="Arial">Arial</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                </select>
-                <label for="font-weight">Épaisseur :</label>
-                <select id="font-weight">
-                    <option value="normal">Normal</option>
-                    <option value="bold">Gras</option>
-                </select>
-                <label for="text-color">Couleur du texte :</label>
-                <input type="color" id="text-color" value="#000000">
-                <label for="underline">Soulignement :</label>
-                <input type="checkbox" id="underline">
-                <label for="border">Bordure du texte :</label>
-                <input type="checkbox" id="border">
-            </div>
-            <button id="add-text">Ajouter du texte</button>
-
             <!-- Importer une image -->
             <div class="row">
                 <label class="title">Importer une image</label>
                 <input type="file" id="upload-image" accept="image/*">
+            </div>
+
+            <!-- Bouton pour ajouter du texte -->
+            <div class="row">
+                <label class="title">Ajouter du texte</label>
+                <button id="add-text-btn">Ajouter Texte</button>
             </div>
 
             <!-- Boutons de contrôle -->
@@ -102,39 +85,560 @@
                 <button class="clear-canvas">Effacer le Canevas</button>
                 <button class="save-img">Enregistrer sous forme d'image</button>
             </div>
-
-            <!-- Bouton pour afficher la calculatrice -->
-            <div class="row">
-                <button id="calc-btn">Calculatrice</button>
+            <!-- Ajouter un bouton pour supprimer l'objet sélectionné -->
+            <div class="row buttons">
+                <button id="delete-object">Supprimer l'objet sélectionné</button>
+            </div>
+            <!-- Ajouter un bouton pour afficher la calculatrice -->
+            <div class="row buttons">
+                <button id="show-calculator">Calculatrice</button>
             </div>
         </section>
 
         <section class="drawing-board">
-            <canvas></canvas>
+            <canvas id="canvas"></canvas>
         </section>
+    </div>
 
-        <!-- Calculatrice -->
-        <section class="calculator" style="display:none;">
-            <input type="text" id="calc-display" disabled>
-            <div class="calc-buttons">
-                <button class="calc-btn" data-value="1">1</button>
-                <button class="calc-btn" data-value="2">2</button>
-                <button class="calc-btn" data-value="3">3</button>
-                <button class="calc-btn" data-value="+">+</button>
-                <button class="calc-btn" data-value="4">4</button>
-                <button class="calc-btn" data-value="5">5</button>
-                <button class="calc-btn" data-value="6">6</button>
-                <button class="calc-btn" data-value="-">-</button>
-                <button class="calc-btn" data-value="7">7</button>
-                <button class="calc-btn" data-value="8">8</button>
-                <button class="calc-btn" data-value="9">9</button>
-                <button class="calc-btn" data-value="*">*</button>
-                <button class="calc-btn" data-value="C">C</button>
-                <button class="calc-btn" data-value="0">0</button>
-                <button class="calc-btn" data-value="=">=</button>
-                <button class="calc-btn" data-value="/">/</button>
-            </div>
-        </section>
+    <!-- Fenêtre modale pour ajouter du texte -->
+    <div id="text-modal" class="modal">
+        <div class="modal-content">
+            <h3>Ajouter un texte</h3>
+            <label for="text-content">Contenu du texte :</label>
+            <input type="text" id="text-content" placeholder="Entrez votre texte">
+            <label for="font-size">Taille de la police :</label>
+            <input type="number" id="font-size" value="20" min="10" max="100">
+            <label for="font-family">Famille de police :</label>
+            <select id="font-family">
+                <option value="Arial">Arial</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Times New Roman">Times New Roman</option>
+            </select>
+            <label for="font-weight">Épaisseur :</label>
+            <select id="font-weight">
+                <option value="normal">Normal</option>
+                <option value="bold">Gras</option>
+            </select>
+            <label for="text-color">Couleur du texte :</label>
+            <input type="color" id="text-color" value="#000000">
+            <button id="add-text-to-canvas">Ajouter</button>
+        </div>
+    </div>
+
+    <!-- Fenêtre calculatrice sur le canevas -->
+    <div id="calculator-canvas" class="calculator" style="display: none; position: absolute; z-index: 9999; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);">
+        <h3>Calculatrice</h3>
+        <input type="text" id="canvas-calc-display" disabled style="width: 100%; padding: 10px; font-size: 1.2rem; margin-bottom: 10px;">
+        <div class="calculator-buttons">
+            <button class="calc-btn">7</button>
+            <button class="calc-btn">8</button>
+            <button class="calc-btn">9</button>
+            <button class="calc-btn">/</button>
+            <button class="calc-btn">4</button>
+            <button class="calc-btn">5</button>
+            <button class="calc-btn">6</button>
+            <button class="calc-btn">*</button>
+            <button class="calc-btn">1</button>
+            <button class="calc-btn">2</button>
+            <button class="calc-btn">3</button>
+            <button class="calc-btn">-</button>
+            <button class="calc-btn">0</button>
+            <button class="calc-btn">.</button>
+            <button class="calc-btn">=</button>
+            <button class="calc-btn">+</button>
+            <button class="calc-btn" id="canvas-calc-clear">C</button>
+        </div>
+        <button id="close-canvas-calculator" style="margin-top: 10px;">Fermer</button>
     </div>
 </body>
 </html>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #4A98F7;
+    flex-direction: column;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    padding: 10px;
+    max-width: 1440px;
+    flex-direction: column;
+}
+
+section {
+    background: #fff;
+    border-radius: 7px;
+    padding: 15px;
+}
+
+.tools-board {
+    width: 100%;
+    padding: 15px 22px 0;
+}
+
+.tools-board .row {
+    margin-bottom: 20px;
+}
+
+.row .options {
+    list-style: none;
+    margin: 10px 0 0 5px;
+}
+
+.row .options .option {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.option:is(:hover, .active) img {
+    filter: invert(17%) sepia(90%) saturate(3000%) hue-rotate(900deg) brightness(100%) contrast(100%);
+}
+
+.option span {
+    color: #5A6168;
+    cursor: pointer;
+    padding-left: 10px;
+}
+
+.option:hover span,
+.option.active span {
+    color: #4A98F7;
+}
+
+.option #fill-color {
+    cursor: pointer;
+    height: 14px;
+    width: 14px;
+}
+
+#fill-color:checked ~ label {
+    color: #4A98F7;
+}
+
+.option #size-slider {
+    width: 100%;
+    height: 5px;
+    margin-top: 10px;
+}
+
+.colors .options {
+    display: flex;
+    justify-content: space-between;
+}
+
+.colors .option {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    margin-top: 3px;
+    position: relative;
+}
+
+.colors .option.selected::before {
+    position: absolute;
+    content: "";
+    top: 50%;
+    left: 50%;
+    height: 12px;
+    width: 12px;
+    background: inherit;
+    border-radius: inherit;
+    border: 2px solid #fff;
+    transform: translate(-50%, -50%);
+}
+
+.colors .option:first-child.selected::before {
+    border-color: #ccc;
+}
+
+.option #color-picker {
+    opacity: 0;
+    cursor: pointer;
+}
+
+.buttons button {
+    width: 100%;
+    color: #fff;
+    border: none;
+    outline: none;
+    padding: 11px 0;
+    font-size: 0.9rem;
+    margin-bottom: 13px;
+    background: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.buttons .clear-canvas {
+    background-color: #E74C3C;
+    border: 1px solid #E74C3C;
+    transition: all 0.3s ease;
+}
+
+.buttons .clear-canvas:hover {
+    background-color: #C0392B;
+}
+
+.buttons .save-img {
+    background: #4A98F7;
+    border: 1px solid #4A98F7;
+}
+
+.save-img:hover {
+    background-color: #6C757D;
+    color: #fff;
+}
+
+.drawing-board {
+    flex: 1;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.drawing-board canvas {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#add-text-btn, #show-calculator, #delete-object {
+    padding: 10px;
+    background-color: #4A98F7;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#add-text-btn:hover, #show-calculator:hover, #delete-object:hover {
+    background-color: #6C757D;
+    color: white;
+}
+
+/* Styles pour la calculatrice sur le canevas */
+#calculator-canvas {
+    position: absolute;
+    z-index: 9999;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+#canvas-calc-display {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.calc-btn {
+    padding: 20px;
+    font-size: 1.2rem;
+    background: #4A98F7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.calc-btn:hover {
+    background: #6C757D;
+}
+
+/* Media queries for larger screens */
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row;
+    }
+
+    .tools-board {
+        width: 250px;
+    }
+}
+</style>
+
+<script>
+// Initialiser le canevas Fabric.js
+const canvas = new fabric.Canvas('canvas', {
+    isDrawingMode: false,
+    backgroundColor: 'white',
+    width: 1130,
+    height: 900
+});
+
+// Paramètres du pinceau par défaut
+canvas.freeDrawingBrush.color = "#000000"; // Couleur par défaut
+canvas.freeDrawingBrush.width = 5; // Taille par défaut
+
+// Sélection des éléments du DOM
+const sizeSlider = document.querySelector("#size-slider");
+const colorBtns = document.querySelectorAll(".colors .option");
+const colorPicker = document.querySelector("#color-picker");
+const clearCanvas = document.querySelector(".clear-canvas");
+const saveImg = document.querySelector(".save-img");
+const uploadImageInput = document.querySelector("#upload-image");
+const addTextBtn = document.querySelector("#add-text-btn");
+const textModal = document.querySelector("#text-modal");
+const addTextToCanvasBtn = document.querySelector("#add-text-to-canvas");
+const textContentInput = document.querySelector("#text-content");
+const fontSizeInput = document.querySelector("#font-size");
+const fontFamilySelect = document.querySelector("#font-family");
+const fontWeightSelect = document.querySelector("#font-weight");
+const textColorInput = document.querySelector("#text-color");
+const fillColorCheckbox = document.querySelector("#fill-color");
+const deleteObjectBtn = document.querySelector("#delete-object");
+const showCalculatorBtn = document.querySelector("#show-calculator");
+const calculatorCanvas = document.querySelector("#calculator-canvas");
+const canvasCalcDisplay = document.querySelector("#canvas-calc-display");
+const canvasCalcButtons = document.querySelectorAll("#calculator-canvas .calc-btn");
+const closeCanvasCalculatorBtn = document.querySelector("#close-canvas-calculator");
+
+// Fonction pour dessiner des formes
+function addShape(type) {
+    let shape;
+    const fillColor = fillColorCheckbox && fillColorCheckbox.checked ? canvas.freeDrawingBrush.color : 'transparent';
+
+    if (type === 'rectangle') {
+        shape = new fabric.Rect({
+            width: 100,
+            height: 100,
+            left: 150,
+            top: 100,
+            fill: fillColor,
+            stroke: canvas.freeDrawingBrush.color,
+            strokeWidth: 2
+        });
+    } else if (type === 'circle') {
+        shape = new fabric.Circle({
+            radius: 50,
+            left: 150,
+            top: 100,
+            fill: fillColor,
+            stroke: canvas.freeDrawingBrush.color,
+            strokeWidth: 2
+        });
+    } else if (type === 'triangle') {
+        shape = new fabric.Triangle({
+            width: 100,
+            height: 100,
+            left: 150,
+            top: 100,
+            fill: fillColor,
+            stroke: canvas.freeDrawingBrush.color,
+            strokeWidth: 2
+        });
+    }
+
+    shape.set({ selectable: true }); // Rendre la forme déplaçable et redimensionnable
+    canvas.add(shape);
+    canvas.renderAll();
+}
+
+// Activer le pinceau
+document.getElementById('brush').addEventListener('click', () => {
+    canvas.isDrawingMode = true;
+    canvas.selection = false; // Désactiver la sélection d'objets
+});
+
+// Activer la gomme (simuler la gomme en dessinant avec la couleur du fond)
+document.getElementById('eraser').addEventListener('click', () => {
+    canvas.isDrawingMode = true;
+    canvas.freeDrawingBrush.color = "white"; // Utiliser la couleur blanche comme gomme
+});
+
+// Ajuster la taille du pinceau/gomme
+sizeSlider.addEventListener('change', () => {
+    canvas.freeDrawingBrush.width = parseInt(sizeSlider.value);
+});
+
+// Gestion des couleurs pour le pinceau
+colorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelector(".colors .selected").classList.remove("selected");
+        btn.classList.add("selected");
+        const selectedColor = window.getComputedStyle(btn).getPropertyValue("background-color");
+        canvas.freeDrawingBrush.color = selectedColor;
+    });
+});
+
+// Sélecteur de couleur personnalisé
+colorPicker.addEventListener("change", () => {
+    canvas.freeDrawingBrush.color = colorPicker.value;
+});
+// Effacer le canevas
+clearCanvas.addEventListener("click", () => {
+    canvas.clear(); // Effacer tout le canevas
+    canvas.backgroundColor = 'white'; // Réinitialiser l'arrière-plan en blanc
+    canvas.renderAll();
+});
+
+// Sauvegarder le dessin en tant qu'image
+saveImg.addEventListener("click", () => {
+    const dataURL = canvas.toDataURL({
+        format: 'png',
+        multiplier: 2
+    });
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = `canvas_${Date.now()}.png`;
+    link.click();
+});
+
+// Importer une image sur le canevas
+uploadImageInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        fabric.Image.fromURL(event.target.result, (img) => {
+            img.set({
+                left: 150,
+                top: 100,
+                scaleX: 0.5,
+                scaleY: 0.5,
+                selectable: true,
+                hasBorders: true,
+                hasControls: true
+            });
+
+            canvas.add(img);
+            canvas.renderAll();
+        });
+    };
+    reader.readAsDataURL(file);
+});
+
+// Ajouter une zone de texte avec propriétés personnalisées
+addTextBtn.addEventListener('click', () => {
+    textModal.style.display = 'block'; // Afficher la modale pour ajouter du texte
+});
+
+// Ajouter le texte au canevas
+addTextToCanvasBtn.addEventListener('click', () => {
+    const textContent = textContentInput.value;
+    const fontSize = fontSizeInput.value;
+    const fontFamily = fontFamilySelect.value;
+    const fontWeight = fontWeightSelect.value;
+    const textColor = textColorInput.value;
+
+    const newText = new fabric.Text(textContent, {
+        left: 150,
+        top: 100,
+        fontSize: parseInt(fontSize),
+        fontFamily: fontFamily,
+        fontWeight: fontWeight,
+        fill: textColor,
+        selectable: true, // Rendre le texte déplaçable et redimensionnable
+    });
+
+    canvas.add(newText);
+    canvas.renderAll();
+    textModal.style.display = 'none'; // Fermer la modale après ajout
+});
+
+// Supprimer l'objet sélectionné
+deleteObjectBtn.addEventListener("click", () => {
+    const activeObject = canvas.getActiveObject(); // Récupérer l'objet sélectionné
+
+    if (activeObject) {
+        canvas.remove(activeObject); // Supprimer l'objet du canevas
+        canvas.renderAll(); // Re-rendre le canevas après la suppression
+    } else {
+        alert("Aucun objet sélectionné !");
+    }
+});
+
+// Afficher la calculatrice sur le canevas
+showCalculatorBtn.addEventListener("click", () => {
+    calculatorCanvas.style.display = 'block';
+    calculatorCanvas.style.zIndex = 9999; // S'assurer que la calculatrice est au-dessus des autres éléments
+});
+
+// Fermer la calculatrice
+closeCanvasCalculatorBtn.addEventListener("click", () => {
+    calculatorCanvas.style.display = 'none'; // Fermer la calculatrice
+});
+
+// Gestion des boutons de la calculatrice
+canvasCalcButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        const value = button.textContent;
+
+        if (value === "C") {
+            canvasCalcDisplay.value = "";
+        } else if (value === "=") {
+            try {
+                canvasCalcDisplay.value = eval(canvasCalcDisplay.value);
+            } catch {
+                canvasCalcDisplay.value = "Erreur";
+            }
+        } else {
+            canvasCalcDisplay.value += value;
+        }
+    });
+});
+
+// Activer le pinceau
+document.getElementById('brush').addEventListener('click', () => {
+    canvas.isDrawingMode = true;
+    canvas.selection = false; // Désactiver la sélection d'objets
+});
+
+// Activer la gomme (simuler la gomme en dessinant avec la couleur du fond)
+document.getElementById('eraser').addEventListener('click', () => {
+    canvas.isDrawingMode = true;
+    canvas.freeDrawingBrush.color = "white"; // Utiliser la couleur blanche comme gomme
+});
+
+// Ajuster la taille du pinceau/gomme
+sizeSlider.addEventListener('change', () => {
+    canvas.freeDrawingBrush.width = parseInt(sizeSlider.value);
+});
+
+// Gestion des couleurs pour le pinceau
+colorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelector(".colors .selected").classList.remove("selected");
+        btn.classList.add("selected");
+        const selectedColor = window.getComputedStyle(btn).getPropertyValue("background-color");
+        canvas.freeDrawingBrush.color = selectedColor;
+    });
+});
+
+// Sélecteur de couleur personnalisé
+colorPicker.addEventListener("change", () => {
+    canvas.freeDrawingBrush.color = colorPicker.value;
+});

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -27,6 +28,7 @@ body {
 section {
     background: #fff;
     border-radius: 7px;
+    padding: 15px;
 }
 
 .tools-board {
@@ -54,13 +56,14 @@ section {
     filter: invert(17%) sepia(90%) saturate(3000%) hue-rotate(900deg) brightness(100%) contrast(100%);
 }
 
-.option :where(span, label) {
+.option span {
     color: #5A6168;
     cursor: pointer;
     padding-left: 10px;
 }
 
-.option:is(:hover, .active) :where(span, label) {
+.option:hover span,
+.option.active span {
     color: #4A98F7;
 }
 
@@ -70,7 +73,7 @@ section {
     width: 14px;
 }
 
-#fill-color:checked~label {
+#fill-color:checked ~ label {
     color: #4A98F7;
 }
 
@@ -115,7 +118,7 @@ section {
     cursor: pointer;
 }
 
-.buttons button, #calc-btn {
+.buttons button {
     width: 100%;
     color: #fff;
     border: none;
@@ -129,15 +132,13 @@ section {
 }
 
 .buttons .clear-canvas {
-    color: #f3f6f8;
-    border: 1px solid #6C757D;
+    background-color: #E74C3C;
+    border: 1px solid #E74C3C;
     transition: all 0.3s ease;
-    background-color: rgb(151, 16, 16);
 }
 
-.clear-canvas:hover {
-    color: #fff;
-    background: #6C757D;
+.buttons .clear-canvas:hover {
+    background-color: #C0392B;
 }
 
 .buttons .save-img {
@@ -146,10 +147,8 @@ section {
 }
 
 .save-img:hover {
-
     background-color: #6C757D;
     color: #fff;
-
 }
 
 .drawing-board {
@@ -161,83 +160,49 @@ section {
 .drawing-board canvas {
     width: 100%;
     height: 100%;
-}
-
-.text-properties {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 5px;
-    width: 90%;
 }
 
-.text-properties input, .text-properties select, .text-properties button {
-    display: block;
-    margin-top: 10px;
-    width: 100%;
-}
-
-#add-text {
+#add-text-btn {
     padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    cursor: pointer;
     background-color: #4A98F7;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#add-text-btn:hover {
+    background-color: #6C757D;
     color: white;
 }
 
-#add-text:hover {
-    background-color: #6C757D;
-    color: #fff;
-}
-
-.calculator {
-    padding: 20px;
-    background-color: WHITE;
-    border: 1px solid #ddd;
-    width: 270px;
-    border-radius: 5px;
-    margin-top: 20px;
-    height: 6%;
-}
-
-#calc-display {
-    width: 100%;
-    padding: 10px;
-    text-align: right;
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-}
-
-.calc-buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
-
-#calc-btn {
-    padding: 10px;
-    background-color: #4A98F7;
-    color: rgb(249, 248, 248);
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    
-}
-
-#calc-btn:hover {
-    background-color: #6C757D;
-    color: #fff;
-}
-
+/* Media queries for larger screens */
 @media (min-width: 768px) {
     .container {
         flex-direction: row;
     }
 
     .tools-board {
-        width: 210px;
+        width: 250px;
     }
+}
+
+
+
+
+#delete-object {
+    padding: 10px;
+    background-color: #E74C3C;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#delete-object:hover {
+    background-color: #C0392B;
 }
