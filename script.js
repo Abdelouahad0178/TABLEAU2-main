@@ -1,8 +1,8 @@
 // Initialiser le canevas Fabric.js
 const canvas = new fabric.Canvas('canvas', {
-    isDrawingMode: false, 
-    backgroundColor: 'white', 
-    width: 1100,
+    isDrawingMode: false,
+    backgroundColor: 'white',
+    width: 1130,
     height: 900
 });
 
@@ -26,6 +26,12 @@ const fontFamilySelect = document.querySelector("#font-family");
 const fontWeightSelect = document.querySelector("#font-weight");
 const textColorInput = document.querySelector("#text-color");
 const fillColorCheckbox = document.querySelector("#fill-color");
+const deleteObjectBtn = document.querySelector("#delete-object");
+const showCalculatorBtn = document.querySelector("#show-calculator");
+const calculatorCanvas = document.querySelector("#calculator-canvas");
+const canvasCalcDisplay = document.querySelector("#canvas-calc-display");
+const canvasCalcButtons = document.querySelectorAll("#calculator-canvas .calc-btn");
+const closeCanvasCalculatorBtn = document.querySelector("#close-canvas-calculator");
 
 // Fonction pour dessiner des formes
 function addShape(type) {
@@ -66,12 +72,13 @@ function addShape(type) {
     shape.set({ selectable: true }); // Rendre la forme déplaçable et redimensionnable
     canvas.add(shape);
     canvas.renderAll();
+    canvas.isDrawingMode = false;  // Désactiver le mode dessin après avoir ajouté une forme
 }
 
 // Activer le pinceau
 document.getElementById('brush').addEventListener('click', () => {
-    canvas.isDrawingMode = true;
-    canvas.selection = false; // Désactiver la sélection d'objets
+    canvas.isDrawingMode = true; // Activer le mode dessin
+    canvas.selection = false;    // Désactiver la sélection d'objets pendant le dessin
 });
 
 // Activer la gomme (simuler la gomme en dessinant avec la couleur du fond)
@@ -79,6 +86,17 @@ document.getElementById('eraser').addEventListener('click', () => {
     canvas.isDrawingMode = true;
     canvas.freeDrawingBrush.color = "white"; // Utiliser la couleur blanche comme gomme
 });
+
+// Désactiver le pinceau et activer la sélection d'objets après avoir dessiné
+canvas.on('mouse:up', function() {
+    canvas.isDrawingMode = false; // Désactiver le mode dessin une fois que la souris est relâchée
+    canvas.selection = true;      // Réactiver la sélection des objets
+});
+
+// Ajouter gestionnaire d'événements pour chaque forme
+document.getElementById('rectangle').addEventListener('click', () => addShape('rectangle'));
+document.getElementById('circle').addEventListener('click', () => addShape('circle'));
+document.getElementById('triangle').addEventListener('click', () => addShape('triangle'));
 
 // Ajuster la taille du pinceau/gomme
 sizeSlider.addEventListener('change', () => {
@@ -137,37 +155,11 @@ uploadImageInput.addEventListener("change", (e) => {
                 hasControls: true
             });
 
-            // Rendre l'image déplaçable et redimensionnable
-            img.setControlsVisibility({
-                mt: true, // top middle
-                mb: true, // bottom middle
-                ml: true, // middle left
-                mr: true, // middle right
-                bl: true, // bottom left
-                br: true, // bottom right
-                tl: true, // top left
-                tr: true, // top right
-            });
-
             canvas.add(img);
             canvas.renderAll();
         });
     };
     reader.readAsDataURL(file);
-});
-
-// Gestion des boutons pour ajouter des formes
-document.getElementById('rectangle').addEventListener('click', () => {
-    canvas.isDrawingMode = false;
-    addShape('rectangle');
-});
-document.getElementById('circle').addEventListener('click', () => {
-    canvas.isDrawingMode = false;
-    addShape('circle');
-});
-document.getElementById('triangle').addEventListener('click', () => {
-    canvas.isDrawingMode = false;
-    addShape('triangle');
 });
 
 // Ajouter une zone de texte avec propriétés personnalisées
@@ -198,10 +190,7 @@ addTextToCanvasBtn.addEventListener('click', () => {
     textModal.style.display = 'none'; // Fermer la modale après ajout
 });
 
-// Sélection du bouton "Supprimer l'objet sélectionné"
-const deleteObjectBtn = document.querySelector("#delete-object");
-
-// Ajouter l'événement click pour supprimer l'objet sélectionné
+// Supprimer l'objet sélectionné
 deleteObjectBtn.addEventListener("click", () => {
     const activeObject = canvas.getActiveObject(); // Récupérer l'objet sélectionné
 
@@ -211,4 +200,34 @@ deleteObjectBtn.addEventListener("click", () => {
     } else {
         alert("Aucun objet sélectionné !");
     }
+});
+
+// Afficher la calculatrice sur le canevas
+showCalculatorBtn.addEventListener("click", () => {
+    calculatorCanvas.style.display = 'block';
+    calculatorCanvas.style.zIndex = 9999; // S'assurer que la calculatrice est au-dessus des autres éléments
+});
+
+// Fermer la calculatrice
+closeCanvasCalculatorBtn.addEventListener("click", () => {
+    calculatorCanvas.style.display = 'none'; // Fermer la calculatrice
+});
+
+// Gestion des boutons de la calculatrice
+canvasCalcButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        const value = button.textContent;
+
+        if (value === "C") {
+            canvasCalcDisplay.value = "";
+        } else if (value === "=") {
+            try {
+                canvasCalcDisplay.value = eval(canvasCalcDisplay.value);
+            } catch {
+                canvasCalcDisplay.value = "Erreur";
+            }
+        } else {
+            canvasCalcDisplay.value += value;
+        }
+    });
 });
