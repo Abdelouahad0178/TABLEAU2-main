@@ -221,6 +221,25 @@ section {
     background: #6C757D;
 }
 
+/* Style du bouton "+" pour dupliquer */
+.duplicate-btn {
+    position: absolute;
+    display: none;
+    padding: 5px 10px;
+    font-size: 1.5rem;
+    background-color: #4A98F7;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
+}
+
+.duplicate-btn:hover {
+    background-color: #6C757D;
+}
+
 /* Media queries for larger screens */
 @media (min-width: 768px) {
     .container {
